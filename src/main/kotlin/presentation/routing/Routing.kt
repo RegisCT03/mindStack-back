@@ -5,6 +5,7 @@ import com.MindStack.presentation.routing.routes.authRoutes
 import com.MindStack.presentation.routing.routes.checkinRoutes
 import com.MindStack.presentation.routing.routes.dashboardRoutes
 import com.MindStack.presentation.routing.routes.gameRoutes
+import com.MindStack.presentation.routing.routes.sleepRoutes
 import com.MindStack.presentation.routing.routes.streakRoutes
 import io.ktor.server.application.Application
 import io.ktor.server.response.respondText
@@ -24,5 +25,6 @@ fun Application.configureRouting(deps: DependenciesDeclaration) {
         }
         streakRoutes(deps.streakService)
         dashboardRoutes(deps.checkinService, deps.streakService)
+        sleepRoutes(deps.checkinService)
     }
 }
