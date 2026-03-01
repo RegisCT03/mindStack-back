@@ -1,7 +1,6 @@
 package com.MindStack.domain.interfaces.repositories
 
 import com.MindStack.domain.models.GameSession
-import com.MindStack.domain.models.Message
 
 interface IGameSessionRepository {
     suspend fun create(
