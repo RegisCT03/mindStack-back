@@ -3,6 +3,7 @@ package com.MindStack.presentation.routing
 import com.MindStack.presentation.di.DependenciesDeclaration
 import com.MindStack.presentation.routing.routes.authRoutes
 import com.MindStack.presentation.routing.routes.checkinRoutes
+import com.MindStack.presentation.routing.routes.gameRoutes
 import io.ktor.server.application.Application
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
@@ -17,6 +18,7 @@ fun Application.configureRouting(deps: DependenciesDeclaration) {
         route("/api/v1") {
             authRoutes(deps.authService)
             checkinRoutes(deps.checkinService)
+            gameRoutes(deps.gameService)
         }
     }
 }
