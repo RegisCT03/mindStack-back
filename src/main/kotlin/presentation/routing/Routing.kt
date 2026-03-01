@@ -3,6 +3,7 @@ package com.MindStack.presentation.routing
 import com.MindStack.presentation.di.DependenciesDeclaration
 import com.MindStack.presentation.routing.routes.authRoutes
 import com.MindStack.presentation.routing.routes.checkinRoutes
+import com.MindStack.presentation.routing.routes.dashboardRoutes
 import com.MindStack.presentation.routing.routes.gameRoutes
 import com.MindStack.presentation.routing.routes.streakRoutes
 import io.ktor.server.application.Application
@@ -22,5 +23,6 @@ fun Application.configureRouting(deps: DependenciesDeclaration) {
             gameRoutes(deps.gameService)
         }
         streakRoutes(deps.streakService)
+        dashboardRoutes(deps.checkinService, deps.streakService)
     }
 }
