@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: mindStack_back
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - mindstack_network
+    depends_on:
+      - db_check
+
+  db_check:
+    image: postgres:15-alpine
+    networks:
+      - mindstack_network
+    entrypoint: >
+      sh -c "until pg_isready -h db -U ${DB_USER:-postgres}; do
+        echo 'Esperando a la BD...'; sleep 2;
+      done; echo 'BD lista'"
+    env_file:
+      - .env
+    restart: "no"
+
+networks:
+  mindstack_network:
+    external: true
+    name: mindstack_network
