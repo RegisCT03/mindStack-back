@@ -9,5 +9,7 @@ data class StreakResponse(
     val totalDays: Int,
     val goalDays: Int = 20,
     val progressPercent: Double,
-    val isGoalAchieved: Boolean
+    val isGoalAchieved: Boolean,
+    val surveyPending: Boolean = false,
+    val surveyMilestone: Int?  = null
 )

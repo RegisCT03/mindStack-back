@@ -4,8 +4,8 @@ package com.MindStack.application.services
 import com.MindStack.application.dtos.Request.LoginRequest
 import com.MindStack.application.dtos.Request.RegisterRequest
 import com.MindStack.application.dtos.Response.AuthResponse
+import com.MindStack.domain.interfaces.repositories.IUserRepository
 import com.MindStack.domain.interfaces.services.IAuthService
-import com.MindStack.infraestructure.repositories.IUserRepository
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import org.mindrot.jbcrypt.BCrypt

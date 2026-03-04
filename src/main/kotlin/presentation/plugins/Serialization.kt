@@ -1,12 +1,11 @@
 package com.MindStack.presentation.plugins
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.Application
-import io.ktor.server.application.application
-import io.ktor.server.application.install
-import io.ktor.server.application.log
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.response.respond
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.response.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -21,7 +20,6 @@ fun Application.configureSerialization() {
             ignoreUnknownKeys = true
         })
     }
-
     install(StatusPages) {
         exception<IllegalArgumentException> { call, cause ->
             call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message ?: "Bad request"))

@@ -13,28 +13,29 @@ class StreakService(private val streakRepo: IStreakRepository) {
 
         if (active == null) {
             val new = streakRepo.createNew(userId)
-            return buildResponse(new)
+            return buildResponse(new, surveyPending = false)
         }
 
-        // Último día registrado en la racha activa
         val lastDay = LocalDate.parse(active.startDate)
             .plusDays((active.daysCount - 1).toLong())
 
         return when {
             lastDay == today -> {
-                // Ya se registró hoy, no hacer nada
-                buildResponse(active)
+                // Ya registró hoy — no tocar la racha
+                buildResponse(active, surveyPending = false)
             }
             lastDay.plusDays(1) == today -> {
                 // Día consecutivo: incrementar
                 val updated = streakRepo.increment(active.id)
-                buildResponse(updated)
+                // Verificar si llegó a un punto de encuesta (múltiplo de 10)
+                val isHito = updated.daysCount % 10 == 0
+                buildResponse(updated, surveyPending = isHito)
             }
             else -> {
-                // Se saltó al menos un día: reiniciar racha
+                // Se saltó un día: reiniciar racha
                 streakRepo.close(active.id)
                 val new = streakRepo.createNew(userId)
-                buildResponse(new)
+                buildResponse(new, surveyPending = false)
             }
         }
     }
@@ -50,20 +51,28 @@ class StreakService(private val streakRepo: IStreakRepository) {
             totalDays       = total,
             goalDays        = 20,
             progressPercent = (current / 20.0 * 100.0).coerceAtMost(100.0),
-            isGoalAchieved  = total >= 20
+            isGoalAchieved  = total >= 20,
+            surveyPending   = false,
+            surveyMilestone = null
         )
     }
 
-    private suspend fun buildResponse(streak: StreakInfo): StreakResponse {
+    private suspend fun buildResponse(
+        streak: StreakInfo,
+        surveyPending: Boolean
+    ): StreakResponse {
         val longest = streakRepo.longestStreak(streak.userId)
         val total   = streakRepo.totalDays(streak.userId)
+        val milestone = if (surveyPending) streak.daysCount else null
         return StreakResponse(
             currentStreak   = streak.daysCount,
             longestStreak   = longest,
             totalDays       = total,
             goalDays        = 20,
             progressPercent = (streak.daysCount / 20.0 * 100.0).coerceAtMost(100.0),
-            isGoalAchieved  = total >= 20
+            isGoalAchieved  = total >= 20,
+            surveyPending   = surveyPending,
+            surveyMilestone = milestone
         )
     }
 }

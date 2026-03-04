@@ -8,6 +8,7 @@ import com.MindStack.infraestructure.database.entities.MoodTable
 import com.MindStack.infraestructure.database.entities.RolTable
 import com.MindStack.infraestructure.database.entities.SemaphoreTable
 import com.MindStack.infraestructure.database.entities.StreaksHistoryTable
+import com.MindStack.infraestructure.database.entities.SurveyResponseTable
 import com.MindStack.infraestructure.database.entities.UsersTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -53,7 +54,8 @@ object DatabaseFactory {
                 StreaksHistoryTable,
                 DailyCheckinTable,
                 GameSessionsTable,
-                MessageTable
+                MessageTable,
+                SurveyResponseTable
             )
         }
     }

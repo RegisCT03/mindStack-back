@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
+    kotlin("plugin.serialization") version "1.9.24" // O la versión de tu Kotlin
 }
 
 group = "com.MindStack"
@@ -15,33 +16,42 @@ kotlin {
 }
 
 dependencies {
+    val ktor_version = "3.0.3"
+
+    // Core y Engine
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)
-    implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.config.yaml)
-    implementation("io.ktor:ktor-server-cors:3.3.2")
-    implementation("io.ktor:ktor-server-content-negotiation:3.3.2")
-    implementation("io.ktor:ktor-server-core:3.3.2")
-    implementation("io.ktor:ktor-server-core:3.3.2")
-    implementation("io.ktor:ktor-serialization-jackson:3.3.2")
-    implementation("io.ktor:ktor-server-content-negotiation:3.3.2")
-    implementation("io.ktor:ktor-server-core:3.3.2")
-    testImplementation(libs.ktor.server.test.host)
-    testImplementation(libs.kotlin.test.junit)
 
-    implementation("org.postgresql:postgresql:42.7.7")
-    implementation("org.jetbrains.exposed:exposed-core:0.44.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.44.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.44.1")
-    implementation("org.jetbrains.exposed:exposed-java-time:0.44.1")
+    // --- SERIALIZACIÓN ---
+    implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version") // <-- ESTA ES LA QUE TE FALTA
 
-    implementation("io.ktor:ktor-server-auth:2.3.7")
-    implementation("io.ktor:ktor-server-auth-jwt:2.3.7")
+    // --- MANEJO DE ERRORES ---
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version") // <-- ESTA ES LA QUE TE FALTA
+
+    // --- SEGURIDAD (CORS y AUTH) ---
+    implementation("io.ktor:ktor-server-cors:$ktor_version")
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
     implementation("com.auth0:java-jwt:4.4.0")
 
+    // --- BASE DE DATOS ---
+    implementation("org.postgresql:postgresql:42.7.7")
+    val exposed_version = "0.44.1"
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("org.mindrot:jbcrypt:0.4")
 
+    // Mantén Hikari y Postgres como estaban
+    implementation("org.postgresql:postgresql:42.7.7")
     implementation("com.zaxxer:HikariCP:5.1.0")
 
-    implementation("org.mindrot:jbcrypt:0.4")
+    // Testing
+    testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.kotlin.test.junit)
 }

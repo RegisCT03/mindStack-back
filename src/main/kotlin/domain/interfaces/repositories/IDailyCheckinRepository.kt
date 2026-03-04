@@ -26,4 +26,6 @@ interface IDailyCheckinRepository {
         sleepDebt: Double,
         battery: Int
     ): DailyCheckin
+
+    suspend fun findLastN(userId: Int, n: Int): List<DailyCheckin>
 }

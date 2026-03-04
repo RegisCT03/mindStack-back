@@ -145,4 +145,15 @@ class DailyCheckinRepository : IDailyCheckinRepository {
         batteryCog = row[DailyCheckinTable.batteryCog],
         fatiga     = row[DailyCheckinTable.fatiga]
     )
+
+    override suspend fun findLastN(userId: Int, n: Int): List<DailyCheckin> = dbQuery {
+        DailyCheckinTable
+            .select {
+                (DailyCheckinTable.idUser eq userId) and
+                        DailyCheckinTable.sleepEnd.isNotNull()
+            }
+            .orderBy(DailyCheckinTable.dateTime, SortOrder.DESC)
+            .limit(n)
+            .map { toModel(it) }
+    }
 }
