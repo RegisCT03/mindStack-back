@@ -21,29 +21,29 @@ class DependenciesDeclaration {
     private val checkinRepo = DailyCheckinRepository()
     private val messageRepo = MessageRepository()
     private val gameSessionRepo = GameSessionRepository()
-    private val streakRepo      = StreakRepository()
-    private val surveyRepo      = SurveyRepository()
-
+    private val streakRepo = StreakRepository()
+    private val surveyRepo = SurveyRepository()
 
     val authService: IAuthService = AuthService(userRepo = userRepo)
 
+    val streakService = StreakService(streakRepo = streakRepo)
+
     val checkinService: IDailyCheckinService = DailyCheckinService(
         checkinRepo = checkinRepo,
-        userRepo    = userRepo,
-        messageRepo = messageRepo
+        userRepo = userRepo,
+        messageRepo = messageRepo,
+        streakService = streakService
     )
 
     val gameService: IGameService = GameService(
         gameSessionRepo = gameSessionRepo,
-        checkinRepo     = checkinRepo,
-        messageRepo     = messageRepo,
-        userRepo        = userRepo
+        checkinRepo = checkinRepo,
+        messageRepo = messageRepo,
+        userRepo = userRepo
     )
 
-    val streakService = StreakService(streakRepo = streakRepo)
-
     val surveyService = SurveyService(
-        surveyRepo  = surveyRepo,
+        surveyRepo = surveyRepo,
         checkinRepo = checkinRepo
     )
 }

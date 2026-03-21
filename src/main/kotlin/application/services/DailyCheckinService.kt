@@ -20,17 +20,11 @@ import java.time.ZoneOffset
 class DailyCheckinService(
     private val checkinRepo: IDailyCheckinRepository,
     private val userRepo: IUserRepository,
-    private val messageRepo: IMessageRepository
+    private val messageRepo: IMessageRepository,
+    private val streakService: StreakService
 ) : IDailyCheckinService {
 
     override suspend fun startSleep(userId: Int, req: SleepStartRequest): SleepStartResponse {
-        checkinRepo.findOpenTodayByUser(userId)?.let { existing ->
-            return SleepStartResponse(
-                checkinId  = existing.id,
-                sleepStart = existing.sleepStart ?: req.sleepStart,
-                message    = "Ya tienes un registro de sueño iniciado hoy."
-            )
-        }
         val checkin = checkinRepo.createOpen(idUser = userId, sleepStart = req.sleepStart)
         return SleepStartResponse(
             checkinId  = checkin.id,
@@ -44,37 +38,40 @@ class DailyCheckinService(
     ): DailyCheckinResponse {
         val checkin = checkinRepo.findById(checkinId)
             ?: throw IllegalArgumentException("Check-in no encontrado.")
-        if (checkin.idUser != userId) throw IllegalArgumentException("No autorizado.")
-        if (checkin.sleepEnd != null) throw IllegalArgumentException("Este registro de sueño ya fue cerrado.")
+        if (checkin.idUser != userId)
+            throw IllegalArgumentException("No autorizado.")
+        if (checkin.sleepEnd != null)
+            throw IllegalArgumentException("Este registro de sueño ya fue cerrado.")
 
         val sleepStart = checkin.sleepStart
             ?: throw IllegalArgumentException("El check-in no tiene sleep_start registrado.")
 
-        val hoursSleep   = calculateHoursIso(sleepStart, req.sleepEnd)
-        val idealHours   = userRepo.getIdealSleepHours(userId)
+        val hoursSleep = calculateHoursIso(sleepStart, req.sleepEnd)
+        val idealHours = userRepo.getIdealSleepHours(userId)
         val sleepPercent = (hoursSleep / idealHours) * 100.0
-        val sleepDebt    = (idealHours - hoursSleep).coerceAtLeast(0.0)
+        val sleepDebt = (idealHours - hoursSleep).coerceAtLeast(0.0)
         val semaphore = SemaphoreEngine.evaluate(sleepPercent, req.moodScore)
         val initialBattery = 0
 
         checkinRepo.closeCheckin(
-            checkinId  = checkinId,
-            sleepEnd   = req.sleepEnd,
+            checkinId = checkinId,
+            sleepEnd = req.sleepEnd,
             hoursSleep = hoursSleep,
-            idMood     = req.moodScore.coerceIn(1, 5),
-            idSemaphore   = semaphore.semaphoreId,
-            sleepDebt  = sleepDebt,
-            battery    = initialBattery
+            idMood = req.moodScore.coerceIn(1, 5),
+            idSemaphore = semaphore.semaphoreId,
+            sleepDebt = sleepDebt,
+            battery = initialBattery
         )
 
-        val user      = userRepo.findById(userId)
+        val user = userRepo.findById(userId)
         val msgResult = MessageEngine.getMessage(
-            idRol          = user?.idRol,
+            idRol = user?.idRol,
             semaphoreColor = semaphore.color.name,
-            batteryLevel   = initialBattery
+            batteryLevel = initialBattery
         )
-
         messageRepo.create(checkinId, null, msgResult.full)
+
+        streakService.refresh(userId)
 
         return buildResponse(
             checkinId    = checkinId,
@@ -96,17 +93,24 @@ class DailyCheckinService(
         val sleepPercent = (hoursSleep / idealHours) * 100.0
         val sleepDebt    = (idealHours - hoursSleep).coerceAtLeast(0.0)
         val semaphore    = SemaphoreEngine.evaluate(sleepPercent, req.moodScore)
-        val battery = 0
+        val battery      = 0
 
         val checkin = checkinRepo.create(
-            idUser = userId, sleepStart = req.sleepStart, sleepEnd = req.sleepEnd,
-            hoursSleep = hoursSleep, idMood = req.moodScore.coerceIn(1, 5),
-            idSemaphore = semaphore.semaphoreId, sleepDebt = sleepDebt, battery = battery
+            idUser      = userId,
+            sleepStart  = req.sleepStart,
+            sleepEnd    = req.sleepEnd,
+            hoursSleep  = hoursSleep,
+            idMood      = req.moodScore.coerceIn(1, 5),
+            idSemaphore = semaphore.semaphoreId,
+            sleepDebt   = sleepDebt,
+            battery     = battery
         )
 
         val user      = userRepo.findById(userId)
         val msgResult = MessageEngine.getMessage(user?.idRol, semaphore.color.name, battery)
         messageRepo.create(checkin.id, null, msgResult.full)
+
+        streakService.refresh(userId)
 
         return buildResponse(checkin.id, hoursSleep, sleepDebt, sleepPercent,
             req.moodScore, semaphore, battery, msgResult)
