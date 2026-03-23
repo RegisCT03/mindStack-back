@@ -7,10 +7,8 @@ import com.MindStack.infraestructure.database.entities.StreaksHistoryTable
 import com.MindStack.infraestructure.database.entities.StreaksHistoryTable.endDate
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDate
@@ -37,11 +35,16 @@ class StreakRepository : IStreakRepository {
     }
 
     override suspend fun increment(streakId: Int): StreakInfo = dbQuery {
+        val current = StreaksHistoryTable.selectAll().where { StreaksHistoryTable.id eq streakId }.single()[StreaksHistoryTable.daysCount]
+
         StreaksHistoryTable.update({ StreaksHistoryTable.id eq streakId }) {
-            it.update(StreaksHistoryTable.daysCount, StreaksHistoryTable.daysCount + 1)
+            it[StreaksHistoryTable.daysCount] = current + 1
         }
-        StreaksHistoryTable.selectAll().where { StreaksHistoryTable.id eq streakId }
-            .map { toModel(it) }.first()
+
+        StreaksHistoryTable.selectAll()
+            .where { StreaksHistoryTable.id eq streakId }
+            .map { toModel(it) }
+            .first()
     }
 
     override suspend fun close(streakId: Int): Unit = dbQuery {
