@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
-    kotlin("plugin.serialization") version "1.9.24" // O la versión de tu Kotlin
+    kotlin("plugin.serialization") version "1.9.24"
 }
 
 group = "com.MindStack"
@@ -26,10 +26,10 @@ dependencies {
 
     // --- SERIALIZACIÓN ---
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version") // <-- ESTA ES LA QUE TE FALTA
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
     // --- MANEJO DE ERRORES ---
-    implementation("io.ktor:ktor-server-status-pages:$ktor_version") // <-- ESTA ES LA QUE TE FALTA
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
 
     // --- SEGURIDAD (CORS y AUTH) ---
     implementation("io.ktor:ktor-server-cors:$ktor_version")
@@ -39,7 +39,7 @@ dependencies {
 
     // --- BASE DE DATOS ---
     implementation("org.postgresql:postgresql:42.7.7")
-    val exposed_version = "0.44.1"
+    val exposed_version = "0.57.0"
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
