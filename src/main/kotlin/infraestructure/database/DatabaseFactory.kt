@@ -25,12 +25,12 @@ object DatabaseFactory {
 
     fun init(config: DatabaseConfig) {
         val hikariConfig = HikariConfig().apply {
-            jdbcUrl              = config.jdbc
-            driverClassName      = config.driver
-            username             = config.username
-            password             = config.password
-            maximumPoolSize      = config.maxPoolSize
-            isAutoCommit         = false
+            jdbcUrl = config.jdbc
+            driverClassName = config.driver
+            username = config.username
+            password = config.password
+            maximumPoolSize = config.maxPoolSize
+            isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
             addDataSourceProperty("cachePrepStmts", "true")
             addDataSourceProperty("prepStmtCacheSize", "250")
@@ -42,10 +42,13 @@ object DatabaseFactory {
         logger.info("Database connected: ${config.jdbc}")
 
         transaction(database) {
-            exec("DROP VIEW IF EXISTS vw_dashboard;")
-            exec("DROP VIEW IF EXISTS vw_history;")
-            exec("DROP VIEW IF EXISTS vw_user_profile;")
-            exec("DROP VIEW IF EXISTS vw_user_stats;")
+            exec("DROP VIEW IF EXISTS vw_hipotesis_correlacion CASCADE;")
+            exec("DROP VIEW IF EXISTS vw_dashboard CASCADE;")
+            exec("DROP VIEW IF EXISTS vw_history CASCADE;")
+            exec("DROP VIEW IF EXISTS vw_user_profile CASCADE;")
+            exec("DROP VIEW IF EXISTS vw_user_stats CASCADE;")
+            exec("DROP VIEW IF EXISTS vw_correlacion CASCADE;")
+            exec("DROP VIEW IF EXISTS vw_resumen CASCADE;")
             SchemaUtils.createMissingTablesAndColumns(
                 RolTable,
                 MoodTable,
