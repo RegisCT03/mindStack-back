@@ -6,6 +6,7 @@ import com.MindStack.infraestructure.database.DatabaseFactory.dbQuery
 import com.MindStack.infraestructure.database.entities.GameSessionsTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class GameSessionRepository : IGameSessionRepository {
@@ -38,8 +39,7 @@ class GameSessionRepository : IGameSessionRepository {
     }
 
     override suspend fun findByCheckin(checkinId: Int): List<GameSession> = dbQuery {
-        GameSessionsTable
-            .select { GameSessionsTable.idDailyCheckin eq checkinId }
+        GameSessionsTable.selectAll().where { GameSessionsTable.idDailyCheckin eq checkinId }
             .map { row ->
                 GameSession(
                     id             = row[GameSessionsTable.id],

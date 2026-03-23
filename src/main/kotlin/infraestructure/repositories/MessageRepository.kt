@@ -6,6 +6,7 @@ import com.MindStack.infraestructure.database.DatabaseFactory.dbQuery
 import com.MindStack.infraestructure.database.entities.MessageTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class MessageRepository : IMessageRepository {
@@ -29,8 +30,7 @@ class MessageRepository : IMessageRepository {
     }
 
     override suspend fun findByCheckin(checkinId: Int): List<Message> = dbQuery {
-        MessageTable
-            .select { MessageTable.idDailyCheckin eq checkinId }
+        MessageTable.selectAll().where { MessageTable.idDailyCheckin eq checkinId }
             .map { row ->
                 Message(
                     id             = row[MessageTable.id],

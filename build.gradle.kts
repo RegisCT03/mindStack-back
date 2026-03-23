@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
-    kotlin("plugin.serialization") version "1.9.24" // O la versión de tu Kotlin
+    kotlin("plugin.serialization") version "1.9.24"
 }
 
 group = "com.MindStack"
@@ -39,7 +39,7 @@ dependencies {
 
     // --- BASE DE DATOS ---
     implementation("org.postgresql:postgresql:42.7.7")
-    val exposed_version = "0.44.1"
+    val exposed_version = "0.57.0"
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
