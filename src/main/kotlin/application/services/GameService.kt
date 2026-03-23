@@ -48,9 +48,9 @@ class GameService(
         refreshCombinedBattery(req.idDailyCheckin)
 
         messageRepo.create(
-            idDailyCheckin = null,
-            idGameSession  = session.id,
-            message        = result.recommendation
+            idDailyCheckin = req.idDailyCheckin,
+            idGameSession = session.id,
+            message = result.recommendation
         )
 
         return NeuroReflexResponse(
@@ -95,9 +95,9 @@ class GameService(
         refreshCombinedBattery(req.idDailyCheckin)
 
         messageRepo.create(
-            idDailyCheckin = null,
-            idGameSession  = session.id,
-            message        = result.recommendation
+            idDailyCheckin = req.idDailyCheckin,
+            idGameSession = session.id,
+            message = result.recommendation
         )
 
         return MemoryGameResponse(
