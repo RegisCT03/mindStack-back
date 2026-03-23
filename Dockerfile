@@ -7,7 +7,7 @@ COPY gradle ./gradle
 RUN gradle dependencies --no-daemon || true
 
 COPY src ./src
-RUN gradle buildFatJar --no-daemon
+RUN ./gradlew buildFatJar --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 
