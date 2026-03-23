@@ -45,6 +45,7 @@ object DatabaseFactory {
             exec("DROP VIEW IF EXISTS vw_dashboard;")
             exec("DROP VIEW IF EXISTS vw_history;")
             exec("DROP VIEW IF EXISTS vw_user_profile;")
+            exec("DROP VIEW IF EXISTS vw_user_stats;")
             SchemaUtils.createMissingTablesAndColumns(
                 RolTable,
                 MoodTable,
