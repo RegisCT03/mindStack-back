@@ -35,12 +35,13 @@ class StreakRepository : IStreakRepository {
     }
 
     override suspend fun increment(streakId: Int): StreakInfo = dbQuery {
-        val current = StreaksHistoryTable.selectAll().where { StreaksHistoryTable.id eq streakId }.single()[StreaksHistoryTable.daysCount]
-
+        val currentRecord = StreaksHistoryTable.selectAll()
+            .where { StreaksHistoryTable.id eq streakId }
+            .single()
+        val currentDays = currentRecord[StreaksHistoryTable.daysCount]
         StreaksHistoryTable.update({ StreaksHistoryTable.id eq streakId }) {
-            it[StreaksHistoryTable.daysCount] = current + 1
+            it[StreaksHistoryTable.daysCount] = currentDays + 1
         }
-
         StreaksHistoryTable.selectAll()
             .where { StreaksHistoryTable.id eq streakId }
             .map { toModel(it) }
