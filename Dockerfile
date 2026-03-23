@@ -4,10 +4,17 @@ WORKDIR /app
 
 COPY build.gradle.kts settings.gradle.kts gradle.properties ./
 COPY gradle ./gradle
+COPY gradlew ./gradlew
+COPY gradlew.bat ./gradlew.bat
+
+RUN chmod +x ./gradlew
+
 RUN gradle dependencies --no-daemon || true
 
 COPY src ./src
-RUN ./gradlew buildFatJar --no-daemon
+
+# Compilar
+RUN gradle buildFatJar --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 
