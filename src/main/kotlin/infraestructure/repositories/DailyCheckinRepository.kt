@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
 import java.time.LocalDate
@@ -68,12 +69,9 @@ class DailyCheckinRepository : IDailyCheckinRepository {
 
     override suspend fun findOpenTodayByUser(userId: Int): DailyCheckin? = dbQuery {
         val startOfDay = LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC)
-        DailyCheckinTable
-            .select {
-                (DailyCheckinTable.idUser eq userId) and
-                        (DailyCheckinTable.dateTime greaterEq startOfDay) and
-                        (DailyCheckinTable.sleepEnd.isNull())
-            }
+        DailyCheckinTable.selectAll().where {
+            (DailyCheckinTable.idUser eq userId) and (DailyCheckinTable.dateTime greaterEq startOfDay) and (DailyCheckinTable.sleepEnd.isNull())
+        }
             .orderBy(DailyCheckinTable.dateTime, SortOrder.DESC)
             .map { toModel(it) }
             .firstOrNull()
@@ -101,22 +99,20 @@ class DailyCheckinRepository : IDailyCheckinRepository {
     }
 
     override suspend fun findById(id: Int): DailyCheckin? = dbQuery {
-        DailyCheckinTable.select { DailyCheckinTable.id eq id }
+        DailyCheckinTable.selectAll().where { DailyCheckinTable.id eq id }
             .map { toModel(it) }
             .singleOrNull()
     }
 
     override suspend fun findByUser(userId: Int): List<DailyCheckin> = dbQuery {
-        DailyCheckinTable
-            .select { DailyCheckinTable.idUser eq userId }
+        DailyCheckinTable.selectAll().where { DailyCheckinTable.idUser eq userId }
             .orderBy(DailyCheckinTable.dateTime, SortOrder.DESC)
             .map { toModel(it) }
     }
 
     override suspend fun findTodayByUser(userId: Int): DailyCheckin? = dbQuery {
         val startOfDay = LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC)
-        DailyCheckinTable
-            .select {
+        DailyCheckinTable.selectAll().where {
                 (DailyCheckinTable.idUser eq userId) and
                         (DailyCheckinTable.dateTime greaterEq startOfDay)
             }
@@ -147,11 +143,9 @@ class DailyCheckinRepository : IDailyCheckinRepository {
     )
 
     override suspend fun findLastN(userId: Int, n: Int): List<DailyCheckin> = dbQuery {
-        DailyCheckinTable
-            .select {
-                (DailyCheckinTable.idUser eq userId) and
-                        DailyCheckinTable.sleepEnd.isNotNull()
-            }
+        DailyCheckinTable.selectAll().where {
+            (DailyCheckinTable.idUser eq userId) and DailyCheckinTable.sleepEnd.isNotNull()
+        }
             .orderBy(DailyCheckinTable.dateTime, SortOrder.DESC)
             .limit(n)
             .map { toModel(it) }

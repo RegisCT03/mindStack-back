@@ -7,6 +7,7 @@ import com.MindStack.infraestructure.database.entities.UsersTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import java.time.LocalDate
 
@@ -41,19 +42,19 @@ class UserRepository : IUserRepository {
     }
 
     override suspend fun findByEmail(email: String): Pair<User, String>? = dbQuery {
-        UsersTable.select { UsersTable.email eq email }
+        UsersTable.selectAll().where { UsersTable.email eq email }
             .map { row -> rowToUserWithPassword(row) }
             .singleOrNull()
     }
 
     override suspend fun findById(id: Int): User? = dbQuery {
-        UsersTable.select { UsersTable.id eq id }
+        UsersTable.selectAll().where { UsersTable.id eq id }
             .map { row -> rowToUser(row) }
             .singleOrNull()
     }
 
     override suspend fun getIdealSleepHours(userId: Int): Double = dbQuery {
-        UsersTable.select { UsersTable.id eq userId }
+        UsersTable.selectAll().where { UsersTable.id eq userId }
             .single()[UsersTable.idealSleepHours]
     }
 

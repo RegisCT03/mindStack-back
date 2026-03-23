@@ -26,10 +26,10 @@ dependencies {
 
     // --- SERIALIZACIÓN ---
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version") // <-- ESTA ES LA QUE TE FALTA
 
     // --- MANEJO DE ERRORES ---
-    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version") // <-- ESTA ES LA QUE TE FALTA
 
     // --- SEGURIDAD (CORS y AUTH) ---
     implementation("io.ktor:ktor-server-cors:$ktor_version")

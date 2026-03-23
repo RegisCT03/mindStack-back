@@ -11,17 +11,16 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDate
 
 class StreakRepository : IStreakRepository {
 
     override suspend fun findActive(userId: Int): StreakInfo? = dbQuery {
-        StreaksHistoryTable
-            .select {
-                (StreaksHistoryTable.userId eq userId) and
-                        StreaksHistoryTable.endDate.isNull()
-            }
+        StreaksHistoryTable.selectAll().where {
+            (StreaksHistoryTable.userId eq userId) and StreaksHistoryTable.endDate.isNull()
+        }
             .orderBy(StreaksHistoryTable.startDate, SortOrder.DESC)
             .map { toModel(it) }
             .firstOrNull()
@@ -41,7 +40,7 @@ class StreakRepository : IStreakRepository {
         StreaksHistoryTable.update({ StreaksHistoryTable.id eq streakId }) {
             it.update(StreaksHistoryTable.daysCount, StreaksHistoryTable.daysCount + 1)
         }
-        StreaksHistoryTable.select { StreaksHistoryTable.id eq streakId }
+        StreaksHistoryTable.selectAll().where { StreaksHistoryTable.id eq streakId }
             .map { toModel(it) }.first()
     }
 
@@ -52,14 +51,12 @@ class StreakRepository : IStreakRepository {
     }
 
     override suspend fun longestStreak(userId: Int): Int = dbQuery {
-        StreaksHistoryTable
-            .select { StreaksHistoryTable.userId eq userId }
+        StreaksHistoryTable.selectAll().where { StreaksHistoryTable.userId eq userId }
             .maxOfOrNull { it[StreaksHistoryTable.daysCount] } ?: 0
     }
 
     override suspend fun totalDays(userId: Int): Int = dbQuery {
-        StreaksHistoryTable
-            .select { StreaksHistoryTable.userId eq userId }
+        StreaksHistoryTable.selectAll().where { StreaksHistoryTable.userId eq userId }
             .sumOf { it[StreaksHistoryTable.daysCount] }
     }
 

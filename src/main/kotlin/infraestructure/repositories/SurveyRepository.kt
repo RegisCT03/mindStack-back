@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class SurveyRepository : ISurveyRepository {
@@ -42,13 +43,13 @@ class SurveyRepository : ISurveyRepository {
     }
 
     override suspend fun findByUser(userId: Int): List<SurveyResponse> = dbQuery {
-        SurveyResponseTable.select { SurveyResponseTable.idUser eq userId }
+        SurveyResponseTable.selectAll().where { SurveyResponseTable.idUser eq userId }
             .orderBy(SurveyResponseTable.answeredAt, SortOrder.DESC)
             .map { toModel(it) }
     }
 
     override suspend fun alreadyAnswered(userId: Int, milestone: Int): Boolean = dbQuery {
-        SurveyResponseTable.select {
+        SurveyResponseTable.selectAll().where {
             (SurveyResponseTable.idUser eq userId) and
                     (SurveyResponseTable.streakMilestone eq milestone)
         }.count() > 0
