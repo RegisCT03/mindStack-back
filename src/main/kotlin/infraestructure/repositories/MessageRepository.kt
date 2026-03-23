@@ -5,7 +5,6 @@ import com.MindStack.domain.models.Message
 import com.MindStack.infraestructure.database.DatabaseFactory.dbQuery
 import com.MindStack.infraestructure.database.entities.MessageTable
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
@@ -14,8 +13,9 @@ class MessageRepository : IMessageRepository {
     override suspend fun create(
         idDailyCheckin: Int?, idGameSession: Int?, message: String
     ): Message = dbQuery {
+        val checkinId = requireNotNull(idDailyCheckin) { "idDailyCheckin no puede ser null"}
         val insertedId = MessageTable.insert {
-            it[MessageTable.idDailyCheckin] = idDailyCheckin
+            it[MessageTable.idDailyCheckin] = checkinId
             it[MessageTable.idGameSession]  = idGameSession
             it[MessageTable.message]        = message
             it[MessageTable.createdAt]      = Instant.now()

@@ -1,7 +1,8 @@
 package com.MindStack.presentation.routing.routes
 
-import SurveyRequest
+import com.MindStack.application.dtos.Request.SurveyRequest
 import com.MindStack.application.services.SurveyService
+import com.MindStack.presentation.plugins.ErrorResponse
 import com.MindStack.presentation.plugins.userId
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -27,7 +28,7 @@ fun Route.surveyRoutes(surveyService: SurveyService) {
                 if (req.streakMilestone <= 0 || req.streakMilestone % 10 != 0)
                     return@post call.respond(
                         HttpStatusCode.BadRequest,
-                        mapOf("error" to "streakMilestone debe ser un múltiplo de 10 (10, 20, 30...)")
+                        ErrorResponse("streakMilestone debe ser un múltiplo de 10 (10, 20, 30...)")
                     )
 
                 val res = surveyService.submit(userId, req)

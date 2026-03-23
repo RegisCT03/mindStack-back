@@ -1,3 +1,4 @@
+package com.MindStack.domain.models
 import kotlinx.serialization.Serializable
 
 @Serializable
