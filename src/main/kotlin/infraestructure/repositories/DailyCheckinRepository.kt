@@ -123,8 +123,8 @@ class DailyCheckinRepository : IDailyCheckinRepository {
 
     override suspend fun updateBattery(checkinId: Int, battery: Int): Unit = dbQuery {
         DailyCheckinTable.update({ DailyCheckinTable.id eq checkinId }) {
-            it[batteryCog] = battery
-            it[fatiga]     = (100 - battery).coerceAtLeast(0)
+            it[DailyCheckinTable.batteryCog] = battery
+            it[DailyCheckinTable.fatiga] = (100 - battery).coerceAtLeast(0)
         }
     }
 
