@@ -1,3 +1,5 @@
+package com.MindStack.domain.interfaces.repositories
+import com.MindStack.domain.models.SurveyResponse
 
 interface ISurveyRepository {
     suspend fun save(
@@ -9,6 +11,5 @@ interface ISurveyRepository {
     ): SurveyResponse
 
     suspend fun findByUser(userId: Int): List<SurveyResponse>
-
     suspend fun alreadyAnswered(userId: Int, milestone: Int): Boolean
 }

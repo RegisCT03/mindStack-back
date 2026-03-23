@@ -1,9 +1,9 @@
 package com.MindStack.application.services
 
-import ISurveyRepository
-import SurveyRequest
+import com.MindStack.application.dtos.Request.SurveyRequest
 import com.MindStack.application.dtos.Response.SurveyResponseDto
 import com.MindStack.domain.interfaces.repositories.IDailyCheckinRepository
+import com.MindStack.domain.interfaces.repositories.ISurveyRepository
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -23,10 +23,10 @@ class SurveyService(
         val last10 = checkinRepo.findLastN(userId, 10)
         val avgSleep = last10.mapNotNull { it.hoursSleep }
             .takeIf { it.isNotEmpty() }?.average() ?: 0.0
-        val avgBattery    = last10.mapNotNull { it.batteryCog?.toDouble() }
+        val avgBattery = last10.mapNotNull { it.batteryCog?.toDouble() }
             .takeIf { it.isNotEmpty() }?.average() ?: 0.0
 
-        val answersJson   = Json.encodeToString(req.answers)
+        val answersJson = Json.encodeToString(req.answers)
 
         val saved = surveyRepo.save(
             userId           = userId,

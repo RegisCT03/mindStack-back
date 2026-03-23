@@ -1,14 +1,13 @@
 package com.MindStack.infraestructure.repositories
 
-import ISurveyRepository
-import SurveyResponse
+import com.MindStack.domain.interfaces.repositories.ISurveyRepository
+import com.MindStack.domain.models.SurveyResponse
 import com.MindStack.infraestructure.database.DatabaseFactory.dbQuery
 import com.MindStack.infraestructure.database.entities.SurveyResponseTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
