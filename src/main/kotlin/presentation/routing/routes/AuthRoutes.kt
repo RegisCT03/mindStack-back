@@ -19,10 +19,11 @@ fun Route.authRoutes(authService: IAuthService) {
         post("/register") {
             val req = call.receive<RegisterRequest>()
 
-            if (req.password.length < 8) {
+            val passwordError = validatePassword(req.password)
+            if (passwordError != null) {
                 return@post call.respond(
                     HttpStatusCode.BadRequest,
-                    ErrorResponse("La contraseña debe tener mínimo 8 caracteres.")
+                    ErrorResponse(passwordError)
                 )
             }
 
@@ -37,4 +38,29 @@ fun Route.authRoutes(authService: IAuthService) {
             call.respond(HttpStatusCode.OK, res)
         }
     }
+}
+
+fun validatePassword(password: String): String? {
+    val errors = mutableListOf<String>()
+
+    if (password.length < 8)
+        errors.add("mínimo 8 caracteres")
+
+    if (!password.any { it.isUpperCase() })
+        errors.add("al menos una letra mayúscula")
+
+    if (!password.any { it.isLowerCase() })
+        errors.add("al menos una letra minúscula")
+
+    if (!password.any { it.isDigit() })
+        errors.add("al menos un número")
+
+    if (!password.any { it in "!@#\$%^&*()_+-=[]{}|;':\",./<>?" })
+        errors.add("al menos un carácter especial (!@#\$%^&*...)")
+
+    if (password.length > 128)
+        errors.add("máximo 128 caracteres")
+
+    return if (errors.isEmpty()) null
+    else "La contraseña debe tener: ${errors.joinToString(", ")}."
 }
