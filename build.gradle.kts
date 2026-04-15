@@ -55,4 +55,6 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 
+    // Email SMTP
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
 }
