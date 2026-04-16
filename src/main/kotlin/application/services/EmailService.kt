@@ -37,8 +37,8 @@ class SmtpEmailService(
         })
 
         val msg = MimeMessage(session).apply {
-            setFrom(InternetAddress(from, "MindStack", "UTF-8"))
-            setRecipient(Message.RecipientType.TO, InternetAddress(toEmail, toName, "UTF-8")) // <-- Agregamos UTF-8
+            setFrom(InternetAddress(this@SmtpEmailService.from, "MindStack", "UTF-8"))
+            setRecipient(Message.RecipientType.TO, InternetAddress(toEmail, toName, "UTF-8"))
             subject = "Tu código de verificación — MindStack"
             setContent(buildHtml(toName, code), "text/html; charset=utf-8")
         }
