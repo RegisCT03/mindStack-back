@@ -24,11 +24,11 @@ class SmtpEmailService(
 
     override fun sendOtp(toEmail: String, toName: String, code: String) {
         val props = Properties().apply {
-            put("mail.smtp.auth",            "true")
+            put("mail.smtp.auth","true")
             put("mail.smtp.starttls.enable", "true")
-            put("mail.smtp.host",            host)
-            put("mail.smtp.port",            port)
-            put("mail.smtp.ssl.trust",       host)
+            put("mail.smtp.host",host)
+            put("mail.smtp.port",port)
+            put("mail.smtp.ssl.trust",host)
         }
 
         val session = Session.getInstance(props, object : Authenticator() {
@@ -37,8 +37,8 @@ class SmtpEmailService(
         })
 
         val msg = MimeMessage(session).apply {
-            setFrom(InternetAddress(from, "MindStack"))
-            setRecipient(Message.RecipientType.TO, InternetAddress(toEmail, toName))
+            setFrom(InternetAddress(from, "MindStack", "UTF-8"))
+            setRecipient(Message.RecipientType.TO, InternetAddress(toEmail, toName, "UTF-8")) // <-- Agregamos UTF-8
             subject = "Tu código de verificación — MindStack"
             setContent(buildHtml(toName, code), "text/html; charset=utf-8")
         }
