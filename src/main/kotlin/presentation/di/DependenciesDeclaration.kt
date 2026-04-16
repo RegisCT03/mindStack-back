@@ -3,6 +3,7 @@ package com.MindStack.presentation.di
 import com.MindStack.application.services.AuthService
 import com.MindStack.application.services.DailyCheckinService
 import com.MindStack.application.services.GameService
+import com.MindStack.application.services.SmtpEmailService
 import com.MindStack.application.services.StreakService
 import com.MindStack.application.services.SurveyService
 import com.MindStack.domain.interfaces.services.IAuthService
@@ -11,6 +12,7 @@ import com.MindStack.domain.interfaces.services.IGameService
 import com.MindStack.infraestructure.repositories.DailyCheckinRepository
 import com.MindStack.infraestructure.repositories.GameSessionRepository
 import com.MindStack.infraestructure.repositories.MessageRepository
+import com.MindStack.infraestructure.repositories.OtpRepository
 import com.MindStack.infraestructure.repositories.StreakRepository
 import com.MindStack.infraestructure.repositories.SurveyRepository
 import com.MindStack.infraestructure.repositories.UserRepository
@@ -23,9 +25,14 @@ class DependenciesDeclaration {
     private val gameSessionRepo = GameSessionRepository()
     private val streakRepo = StreakRepository()
     private val surveyRepo = SurveyRepository()
+    private val otpRepo = OtpRepository()
+    private val emailService = SmtpEmailService()
 
-    val authService: IAuthService = AuthService(userRepo = userRepo)
-
+    val authService: IAuthService = AuthService(
+        userRepo = userRepo,
+        otpRepo = otpRepo,
+        emailService = emailService
+    )
     val streakService = StreakService(streakRepo = streakRepo)
 
     val checkinService: IDailyCheckinService = DailyCheckinService(

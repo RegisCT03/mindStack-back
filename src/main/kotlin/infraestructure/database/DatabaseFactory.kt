@@ -5,6 +5,7 @@ import com.MindStack.infraestructure.database.entities.GameSessionsTable
 import com.MindStack.infraestructure.database.entities.GameTable
 import com.MindStack.infraestructure.database.entities.MessageTable
 import com.MindStack.infraestructure.database.entities.MoodTable
+import com.MindStack.infraestructure.database.entities.OtpCodeTable
 import com.MindStack.infraestructure.database.entities.RolTable
 import com.MindStack.infraestructure.database.entities.SemaphoreTable
 import com.MindStack.infraestructure.database.entities.StreaksHistoryTable
@@ -59,7 +60,8 @@ object DatabaseFactory {
                 DailyCheckinTable,
                 GameSessionsTable,
                 MessageTable,
-                SurveyResponseTable
+                SurveyResponseTable,
+                OtpCodeTable
             )
         }
     }
