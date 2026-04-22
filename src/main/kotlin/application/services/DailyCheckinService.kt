@@ -27,9 +27,9 @@ class DailyCheckinService(
     override suspend fun startSleep(userId: Int, req: SleepStartRequest): SleepStartResponse {
         val checkin = checkinRepo.createOpen(idUser = userId, sleepStart = req.sleepStart)
         return SleepStartResponse(
-            checkinId  = checkin.id,
+            checkinId = checkin.id,
             sleepStart = req.sleepStart,
-            message    = "Buenas noches. Registro de sueño iniciado."
+            message = "Buenas noches. Registro de sueño iniciado."
         )
     }
 
@@ -74,21 +74,21 @@ class DailyCheckinService(
         streakService.refresh(userId)
 
         return buildResponse(
-            checkinId    = checkinId,
-            hoursSleep   = hoursSleep,
-            sleepDebt    = sleepDebt,
+            checkinId = checkinId,
+            hoursSleep = hoursSleep,
+            sleepDebt = sleepDebt,
             sleepPercent = sleepPercent,
-            moodScore    = req.moodScore,
-            semaphore    = semaphore,
-            battery      = initialBattery,
-            msgResult    = msgResult
+            moodScore = req.moodScore,
+            semaphore = semaphore,
+            battery = initialBattery,
+            msgResult = msgResult
         )
     }
 
     override suspend fun submitCheckin(userId: Int, req: DailyCheckinRequest): DailyCheckinResponse {
-        val start        = LocalTime.parse(req.sleepStart)
-        val end          = LocalTime.parse(req.sleepEnd)
-        val hoursSleep   = calculateHoursLegacy(start, end)
+        val start = LocalTime.parse(req.sleepStart)
+        val end = LocalTime.parse(req.sleepEnd)
+        val hoursSleep = calculateHoursLegacy(start, end)
         val idealHours   = userRepo.getIdealSleepHours(userId)
         val sleepPercent = (hoursSleep / idealHours) * 100.0
         val sleepDebt    = (idealHours - hoursSleep).coerceAtLeast(0.0)

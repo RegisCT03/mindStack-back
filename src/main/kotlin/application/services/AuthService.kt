@@ -21,11 +21,11 @@ class AuthService(
     private val userRepo: IUserRepository,
     private val otpRepo: IOtpRepository,
     private val emailService: IEmailService,
-    private val jwtSecret: String   = System.getenv("JWT_SECRET")   ?: "mindstack_secret_dev",
-    private val jwtIssuer: String   = System.getenv("JWT_ISSUER")   ?: "mindstack",
+    private val jwtSecret: String = System.getenv("JWT_SECRET") ?: "mindstack_secret_dev",
+    private val jwtIssuer: String = System.getenv("JWT_ISSUER") ?: "mindstack",
     private val jwtAudience: String = System.getenv("JWT_AUDIENCE") ?: "mindstack_users",
-    private val jwtExpiration: Long  = 86_400_000L,
-    private val preAuthExpiry: Long  = 600_000L,
+    private val jwtExpiration: Long = 86_400_000L,
+    private val preAuthExpiry: Long = 600_000L,
     private val otpExpirySeconds: Long = 600L
 ) : IAuthService {
 
@@ -35,18 +35,18 @@ class AuthService(
         }
         val hashed = BCrypt.hashpw(req.password, BCrypt.gensalt())
         val user = userRepo.create(
-            name            = req.name,
-            lastName        = req.lastName,
-            email           = req.email,
+            name = req.name,
+            lastName = req.lastName,
+            email = req.email,
             hashedPassword  = hashed,
-            dateOfBirth     = req.dateOfBirth,
-            gender          = req.gender,
+            dateOfBirth = req.dateOfBirth,
+            gender = req.gender,
             idealSleepHours = req.idealSleepHours
         )
         return AuthResponse(
-            token  = buildSessionJwt(user.id, user.email),
+            token = buildSessionJwt(user.id, user.email),
             userId = user.id,
-            name   = user.name
+            name = user.name
         )
     }
 
@@ -56,19 +56,19 @@ class AuthService(
         if (!BCrypt.checkpw(req.password, hashed))
             throw IllegalArgumentException("Credenciales inválidas.")
 
-        val code      = generateCode()
+        val code = generateCode()
         val expiresAt = Instant.now().plusSeconds(otpExpirySeconds)
 
         otpRepo.save(
-            userId    = user.id,
-            code      = code,
+            userId = user.id,
+            code = code,
             expiresAt = expiresAt
         )
 
         emailService.sendOtp(
             toEmail = user.email,
-            toName  = user.name,
-            code    = code
+            toName = user.name,
+            code = code
         )
 
         return PreAuthResponse(
