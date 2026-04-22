@@ -1,0 +1,602 @@
+openapi: 3.0.3
+info:
+  title: MindStack API
+  description: API REST para MindStack, una plataforma orientada al bienestar personal y la gestión de energía para estudiantes universitarios.
+  version: 1.0.0
+servers:
+  - url: https://mindstack-back.onrender.com/api/v1
+    description: Servidor de Producción (Render)
+  - url: http://localhost:8080/api/v1
+    description: Servidor de Desarrollo Local
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - lastName
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          description: "Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial."
+        dateOfBirth:
+          type: string
+          format: date
+          nullable: true
+        gender:
+          type: string
+          nullable: true
+        idealSleepHours:
+          type: number
+          format: float
+          default: 8.0
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    VerifyOtpRequest:
+      type: object
+      required:
+        - preAuthToken
+        - code
+      properties:
+        preAuthToken:
+          type: string
+        code:
+          type: string
+          description: "Código de 6 dígitos numéricos"
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        userId:
+          type: integer
+        name:
+          type: string
+
+    PreAuthResponse:
+      type: object
+      properties:
+        preAuthToken:
+          type: string
+        message:
+          type: string
+
+    # --- Checkin & Sleep DTOs ---
+    DailyCheckinRequest:
+      type: object
+      required:
+        - sleepStart
+        - sleepEnd
+        - moodScore
+      properties:
+        sleepStart:
+          type: string
+        sleepEnd:
+          type: string
+        moodScore:
+          type: integer
+
+    SleepStartRequest:
+      type: object
+      required:
+        - sleepStart
+      properties:
+        sleepStart:
+          type: string
+          format: date-time
+
+    SleepEndRequest:
+      type: object
+      required:
+        - sleepEnd
+        - moodScore
+      properties:
+        sleepEnd:
+          type: string
+          format: date-time
+        moodScore:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    SleepStartResponse:
+      type: object
+      properties:
+        checkinId:
+          type: integer
+        sleepStart:
+          type: string
+        message:
+          type: string
+
+    DailyCheckinResponse:
+      type: object
+      properties:
+        checkinId:
+          type: integer
+        hoursSleep:
+          type: number
+        sleepDebt:
+          type: number
+        sleepPercent:
+          type: number
+        moodScore:
+          type: integer
+        semaphore:
+          $ref: '#/components/schemas/SemaphoreResponse'
+        batteryCog:
+          type: integer
+        fatiga:
+          type: integer
+        message:
+          type: string
+        personalizedMessage:
+          $ref: '#/components/schemas/PersonalizedMessage'
+
+    SemaphoreResponse:
+      type: object
+      properties:
+        color:
+          type: string
+        label:
+          type: string
+        recommendation:
+          type: string
+
+    PersonalizedMessage:
+      type: object
+      properties:
+        prefix:
+          type: string
+        body:
+          type: string
+        full:
+          type: string
+        batteryRange:
+          type: string
+
+    # --- Games DTOs ---
+    NeuroReflexRequest:
+      type: object
+      required:
+        - idDailyCheckin
+        - reactionTime1Ms
+        - reactionTime2Ms
+        - reactionTime3Ms
+      properties:
+        idDailyCheckin:
+          type: integer
+        reactionTime1Ms:
+          type: number
+        reactionTime2Ms:
+          type: number
+        reactionTime3Ms:
+          type: number
+
+    MemoryGameRequest:
+      type: object
+      required:
+        - idDailyCheckin
+        - correctHits
+        - totalRequired
+      properties:
+        idDailyCheckin:
+          type: integer
+        correctHits:
+          type: integer
+        totalRequired:
+          type: integer
+
+    NeuroReflexResponse:
+      type: object
+      properties:
+        sessionId:
+          type: integer
+        averageMs:
+          type: number
+        battery:
+          type: integer
+        label:
+          type: string
+        recommendation:
+          type: string
+
+    MemoryGameResponse:
+      type: object
+      properties:
+        sessionId:
+          type: integer
+        accuracyPercent:
+          type: number
+        battery:
+          type: integer
+        label:
+          type: string
+        recommendation:
+          type: string
+
+    CombinedBatteryResponse:
+      type: object
+      properties:
+        finalBattery:
+          type: integer
+        fatiga:
+          type: integer
+        semaphoreColor:
+          type: string
+        cognitiveSemaphore:
+          type: string
+        globalRecommendation:
+          type: string
+        personalizedMessage:
+          $ref: '#/components/schemas/PersonalizedMessage'
+
+    StreakResponse:
+      type: object
+      properties:
+        currentStreak:
+          type: integer
+        longestStreak:
+          type: integer
+        totalDays:
+          type: integer
+        goalDays:
+          type: integer
+        progressPercent:
+          type: number
+        isGoalAchieved:
+          type: boolean
+        surveyPending:
+          type: boolean
+        surveyMilestone:
+          type: integer
+          nullable: true
+
+    DashboardResponse:
+      type: object
+      properties:
+        todayCheckin:
+          $ref: '#/components/schemas/DailyCheckinResponse'
+        streak:
+          $ref: '#/components/schemas/StreakResponse'
+        weekSleepAvgHours:
+          type: number
+        weekBatteryAvg:
+          type: number
+        hasPendingSleepStart:
+          type: boolean
+        pendingCheckinId:
+          type: integer
+          nullable: true
+
+    SurveyRequest:
+      type: object
+      required:
+        - streakMilestone
+        - answers
+      properties:
+        streakMilestone:
+          type: integer
+        answers:
+          type: object
+
+    SurveyResponseDto:
+      type: object
+      properties:
+        surveyId:
+          type: integer
+        streakMilestone:
+          type: integer
+        answers:
+          type: object
+        avgSleepLast10:
+          type: number
+        avgBatteryLast10:
+          type: number
+        answeredAt:
+          type: string
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      summary: Registrar un nuevo usuario
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Error de validación o usuario existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Iniciar sesión (Genera OTP)
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OTP Enviado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreAuthResponse'
+
+  /auth/verify-otp:
+    post:
+      summary: Verificar código OTP
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+      responses:
+        '200':
+          description: Verificación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /sleep/start:
+    post:
+      summary: Iniciar registro de sueño
+      tags: [Sleep]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SleepStartRequest'
+      responses:
+        '201':
+          description: Registro iniciado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SleepStartResponse'
+        '409':
+          description: Ya existe un registro abierto
+
+  /sleep/{checkinId}/end:
+    put:
+      summary: Finalizar registro de sueño
+      tags: [Sleep]
+      parameters:
+        - in: path
+          name: checkinId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SleepEndRequest'
+      responses:
+        '200':
+          description: Sueño registrado y evaluado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyCheckinResponse'
+
+  /checkin:
+    post:
+      summary: Enviar checkin completo (Legacy)
+      tags: [Checkin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyCheckinRequest'
+      responses:
+        '201':
+          description: Checkin creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyCheckinResponse'
+
+  /checkin/today:
+    get:
+      summary: Obtener el checkin completado de hoy
+      tags: [Checkin]
+      responses:
+        '200':
+          description: Checkin actual
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyCheckinResponse'
+        '404':
+          description: Sin checkin completado para hoy
+
+  /checkin/history:
+    get:
+      summary: Historial de todos los checkins
+      tags: [Checkin]
+      responses:
+        '200':
+          description: Lista de checkins
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyCheckinResponse'
+
+  /games/neuro-reflex:
+    post:
+      summary: Enviar resultados del juego Neuro-Reflex (TapTap)
+      tags: [Games]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NeuroReflexRequest'
+      responses:
+        '201':
+          description: Sesión de juego guardada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NeuroReflexResponse'
+
+  /games/memory:
+    post:
+      summary: Enviar resultados del juego de Memoria
+      tags: [Games]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoryGameRequest'
+      responses:
+        '201':
+          description: Sesión de juego guardada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemoryGameResponse'
+
+  /games/battery/{checkinId}:
+    get:
+      summary: Obtener batería cognitiva combinada
+      tags: [Games]
+      parameters:
+        - in: path
+          name: checkinId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Resultado de batería combinada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CombinedBatteryResponse'
+
+  /dashboard:
+    get:
+      summary: Obtener información general del Dashboard
+      tags: [Dashboard]
+      responses:
+        '200':
+          description: Datos del dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+
+  /streak:
+    get:
+      summary: Obtener estado actual de la racha
+      tags: [Streak]
+      responses:
+        '200':
+          description: Datos de la racha
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreakResponse'
+
+  /survey:
+    post:
+      summary: Enviar respuestas de la encuesta de hitos
+      tags: [Survey]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SurveyRequest'
+      responses:
+        '201':
+          description: Encuesta guardada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SurveyResponseDto'
+        '400':
+          description: Error de validación (no es múltiplo de 10, o ya respondida)
+
+  /survey/history:
+    get:
+      summary: Historial de encuestas respondidas
+      tags: [Survey]
+      responses:
+        '200':
+          description: Lista de encuestas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SurveyResponseDto'
