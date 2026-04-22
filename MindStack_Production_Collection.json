@@ -1,0 +1,400 @@
+{
+  "info": {
+    "name": "MindStack API E2E",
+    "description": "Colecci\u00f3n completa para probar el flujo de MindStack (Auth, Sue\u00f1o, Juegos, Dashboard).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. Autenticaci\u00f3n",
+      "item": [
+        {
+          "name": "1.1 Register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Usuario\",\n    \"lastName\": \"Prueba\",\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"dateOfBirth\": \"2000-01-01\",\n    \"gender\": \"Masculino\",\n    \"idealSleepHours\": 8.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if(pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('jwt_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.2 Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if(pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('pre_auth_token', jsonData.preAuthToken);",
+                  "    console.log('Revisa la base de datos o la consola para ver el c\u00f3digo OTP real.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.3 Verify OTP",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"preAuthToken\": \"{{pre_auth_token}}\",\n    \"code\": \"{{otp_code}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/verify-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-otp"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if(pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('jwt_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Flujo Diario (Sue\u00f1o y Checkin)",
+      "item": [
+        {
+          "name": "2.1 Iniciar Sue\u00f1o (Start Sleep)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sleepStart\": \"2026-04-22T22:30:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/sleep/start",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sleep",
+                "start"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if(pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('checkin_id', jsonData.checkinId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "2.2 Finalizar Sue\u00f1o (End Sleep)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sleepEnd\": \"2026-04-23T06:30:00\",\n    \"moodScore\": 4\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/sleep/{{checkin_id}}/end",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sleep",
+                "{{checkin_id}}",
+                "end"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Obtener Check-in de Hoy",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/checkin/today",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "checkin",
+                "today"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Minijuegos Cognitivos",
+      "item": [
+        {
+          "name": "3.1 Jugar Neuro-Reflex (TapTap)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"idDailyCheckin\": {{checkin_id}},\n    \"reactionTime1Ms\": 280.5,\n    \"reactionTime2Ms\": 310.2,\n    \"reactionTime3Ms\": 295.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/games/neuro-reflex",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "neuro-reflex"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.2 Jugar Memorama (Memory)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"idDailyCheckin\": {{checkin_id}},\n    \"correctHits\": 18,\n    \"totalRequired\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/games/memory",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "memory"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.3 Obtener Bater\u00eda Combinada",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/games/battery/{{checkin_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "battery",
+                "{{checkin_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Dashboard y Progreso",
+      "item": [
+        {
+          "name": "4.1 Ver Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.2 Ver Racha",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/streak",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "streak"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.3 Enviar Encuesta (Hito de Racha)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"streakMilestone\": 10,\n    \"answers\": {\n        \"q1\": \"Me siento con m\\u00e1s energ\\u00eda\",\n        \"q2\": \"He mejorado mi ciclo de sue\\u00f1o\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/survey",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "survey"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

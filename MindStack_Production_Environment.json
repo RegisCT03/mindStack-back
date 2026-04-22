@@ -1,0 +1,49 @@
+{
+  "id": "e4b6c8a0-1234-4a5b-8c9d-e4b6c8a01234",
+  "name": "MindStack Production Env",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "https://mindstack-back.onrender.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "email",
+      "value": "test@mindstack.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "password",
+      "value": "Test1234!",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "pre_auth_token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "otp_code",
+      "value": "123456",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "checkin_id",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
